@@ -10,8 +10,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import CircularProgress, { CircularProgressProps, } from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
-// table styling
+
+// table css
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -21,26 +25,59 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontSize: 14,
   },
 }));
+// progress(spinner) css
+function CircularProgressWithLabel(
+  props: CircularProgressProps & { value: number },
+) {
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography
+          variant="caption"
+          component="div"
+          color="text.secondary"
+        >{`${Math.round(props.value)}%`}</Typography>
+      </Box>
+    </Box>
+  );
+}
 
 function App() {
   const [customersData, setData] = useState(null);
+  const [progress, setProgress] = useState(10);
 
   useEffect(() => {
     customers();
+    const timer = setInterval(() => {
+      setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+    }, 800);
+    return () => {
+      clearInterval(timer);
+    };
   }, []);
 
   const customers = async () => {
     try {
       const response = await fetch('/api/customers');
       const body = await response.json();
-      console.log(response, body);
       setData(body);
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
   }
 
-  // console.log(c, setData);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 1080 }} aria-label='Customer Table'>
@@ -60,7 +97,12 @@ function App() {
               return (
                 <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
               )
-            }) : ""
+            }) :
+              <TableRow>
+                <StyledTableCell colSpan="6" align='center'>
+                  <CircularProgressWithLabel value={progress} />
+                </StyledTableCell>
+              </TableRow>
           }
         </TableBody>
       </Table>
