@@ -10,7 +10,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import CircularProgress, { CircularProgressProps, } from '@mui/material/CircularProgress';
+import PropTypes from 'prop-types';
+import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
@@ -26,9 +27,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 // progress(spinner) css
-function CircularProgressWithLabel(
-  props: CircularProgressProps & { value: number },
-) {
+function CircularProgressWithLabel(props) {
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex' }}>
       <CircularProgress variant="determinate" {...props} />
@@ -44,22 +43,30 @@ function CircularProgressWithLabel(
           justifyContent: 'center',
         }}
       >
-        <Typography
-          variant="caption"
-          component="div"
-          color="text.secondary"
-        >{`${Math.round(props.value)}%`}</Typography>
+        <Typography variant="caption" component="div" color="text.secondary">
+          {`${Math.round(props.value)}%`}
+        </Typography>
       </Box>
     </Box>
   );
 }
+CircularProgressWithLabel.propTypes = {
+  /**
+   * The value of the progress indicator for the determinate variant.
+   * Value between 0 and 100.
+   * @default 0
+   */
+  value: PropTypes.number.isRequired,
+};
 
 function App() {
   const [customersData, setData] = useState(null);
   const [progress, setProgress] = useState(10);
 
   useEffect(() => {
-    customers();
+    setTimeout(() => {
+      customers();
+    }, 2000);
     const timer = setInterval(() => {
       setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
     }, 800);
