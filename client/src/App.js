@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import './App.css';
 // import { Route, Link, Routes } from 'react-router-dom';
 import Customer from './components/Customer';
@@ -21,34 +22,25 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   },
 }));
 
-const customers = [
-  {
-    'id': 1,
-    'image': 'https://placeimg.com/64/64/any',
-    'name': '정유성',
-    'birthday': '980213',
-    'gender': '남성',
-    'job': '개발자'
-  },
-  {
-    'id': 2,
-    'image': 'https://placeimg.com/64/64/1',
-    'name': '홍길동',
-    'birthday': '920213',
-    'gender': '남성',
-    'job': '의적'
-  },
-  {
-    'id': 3,
-    'image': 'https://placeimg.com/64/64/2',
-    'name': '이순신',
-    'birthday': '870213',
-    'gender': '남성',
-    'job': '장군'
-  },
-]
-
 function App() {
+  const [customersData, setData] = useState(null);
+
+  useEffect(() => {
+    customers();
+  }, []);
+
+  const customers = async () => {
+    try {
+      const response = await fetch('/api/customers');
+      const body = await response.json();
+      console.log(response, body);
+      setData(body);
+    } catch (error) {
+      console.error('Error fetching data: ', error);
+    }
+  }
+
+  // console.log(c, setData);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 1080 }} aria-label='Customer Table'>
@@ -64,11 +56,11 @@ function App() {
         </TableHead>
         <TableBody>
           {
-            customers.map(c => {
+            customersData ? customersData.map(c => {
               return (
                 <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
               )
-            })
+            }) : ""
           }
         </TableBody>
       </Table>
