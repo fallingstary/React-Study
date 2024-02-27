@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function CustomerAdd(refresh) {
+function CustomerAdd(addProps) {
     const [addData, setAddData] = useState({
         file: null,
         userName: '',
@@ -43,9 +43,10 @@ function CustomerAdd(refresh) {
     const addCustomer = async () => {
         const url = '/api/customers';
         const formData = new FormData();
+        let formatBirthday = convertDateFormat(addData.birthday);
         formData.append('image', addData.file);
         formData.append('userName', addData.userName);
-        formData.append('birthday', addData.birthday);
+        formData.append('birthday', formatBirthday);
         formData.append('gender', addData.gender);
         formData.append('job', addData.job);
 
@@ -56,10 +57,21 @@ function CustomerAdd(refresh) {
                 }
             });
             console.log('서버응답: ', response.data);
-            refresh.stateRefresh();
+            addProps.stateRefresh();
         } catch (error) {
             console.log('서버 요청 실패: ', error);
         }
+    }
+
+    const convertDateFormat = (inputDate) => {
+        console.log(inputDate);
+        // 입력된 날짜 문자열을 '-'로 분리하여 배열로 저장
+        const dateArray = inputDate.split('-');
+
+        // 각 부분을 가져와서 'YYMMDD' 형식으로 조합
+        const formattedDate = dateArray[0].substring(2) + dateArray[1] + dateArray[2];
+        console.log(formattedDate);
+        return formattedDate;
     }
 
     return (

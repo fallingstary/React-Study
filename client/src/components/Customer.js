@@ -1,4 +1,5 @@
 import React from "react";
+import CustomerDelete from "./CustomerDelete";
 import { styled } from '@mui/material/styles';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
@@ -32,6 +33,7 @@ function Customer(customer) {
             <StyledTableCell>{customer.birthday}</StyledTableCell>
             <StyledTableCell>{customer.gender}</StyledTableCell>
             <StyledTableCell>{customer.job}</StyledTableCell>
+            <StyledTableCell><CustomerDelete stateRefresh={customer.stateRefresh} id={customer.id} /></StyledTableCell>
         </StyledTableRow>
     )
 }

@@ -24,7 +24,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/api/customers', (req, res) => {
-    db.query('select * from customer', (err, results) => {
+    db.query('select * from customer where isDeleted = 0', (err, results) => {
         if (err) throw err;
         res.json(results);
     })
@@ -33,7 +33,7 @@ app.get('/api/customers', (req, res) => {
 app.use('/image', express.static('./upload'));
 app.post('/api/customers', upload.single('image'), (req, res) => {
     console.log(req.body);
-    let addSql = 'insert into customer values (null, ?, ?, ?, ?, ?)';
+    let addSql = 'insert into customer values (null, ?, ?, ?, ?, ?, now(), 0)';
     let image = '/image/' + req.file.filename;
     let name = req.body.userName;
     let birthday = req.body.birthday;
@@ -44,6 +44,14 @@ app.post('/api/customers', upload.single('image'), (req, res) => {
         (err, rows, field) => {
             res.send(rows);
         });
+})
+app.delete('/api/customers/:id', (req, res) => {
+    console.log('id', req.params);
+    let deleteSql = 'update customer set isDeleted = 1 where id = ?';
+    let params = [req.params.id];
+    db.query(deleteSql, params, (err, rows, field) => {
+        res.send(rows);
+    })
 })
 
 app.listen(port, () => console.log(`listening on port ${port}`));

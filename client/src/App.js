@@ -102,13 +102,14 @@ function App() {
               <StyledTableCell>생년월일</StyledTableCell>
               <StyledTableCell>성별</StyledTableCell>
               <StyledTableCell>직업</StyledTableCell>
+              <StyledTableCell>설정</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {
               customersData ? customersData.map(c => {
                 return (
-                  <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
+                  <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} stateRefresh={stateRefresh} />
                 )
               }) :
                 <TableRow>
