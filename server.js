@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 dotenv.config();
 const mysql = require('mysql');
+const multer = require('multer');
 
 const app = express();
 
@@ -17,14 +18,32 @@ const db = mysql.createConnection({
 });
 db.connect();
 
+const upload = multer({ dest: './upload' });
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/api/customers', (req, res) => {
-    db.query('SELECT * FROM CUSTOMER', (err, results) => {
+    db.query('select * from customer', (err, results) => {
         if (err) throw err;
         res.json(results);
     })
+})
+
+app.use('/image', express.static('./upload'));
+app.post('/api/customers', upload.single('image'), (req, res) => {
+    console.log(req.body);
+    let addSql = 'insert into customer values (null, ?, ?, ?, ?, ?)';
+    let image = '/image/' + req.file.filename;
+    let name = req.body.userName;
+    let birthday = req.body.birthday;
+    let gender = req.body.gender;
+    let job = req.body.job;
+    let params = [image, name, birthday, gender, job];
+    db.query(addSql, params,
+        (err, rows, field) => {
+            res.send(rows);
+        });
 })
 
 app.listen(port, () => console.log(`listening on port ${port}`));

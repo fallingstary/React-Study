@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 // import { Route, Link, Routes } from 'react-router-dom';
 import Customer from './components/Customer';
+import CustomerAdd from './components/CustomerAdd';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -75,6 +76,10 @@ function App() {
     };
   }, []);
 
+  const stateRefresh = () => {
+    customers();
+  }
+
   const customers = async () => {
     try {
       const response = await fetch('/api/customers');
@@ -86,35 +91,37 @@ function App() {
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 1080 }} aria-label='Customer Table'>
-        <TableHead>
-          <TableRow>
-            <StyledTableCell>번호</StyledTableCell>
-            <StyledTableCell>이미지</StyledTableCell>
-            <StyledTableCell>이름</StyledTableCell>
-            <StyledTableCell>생년월일</StyledTableCell>
-            <StyledTableCell>성별</StyledTableCell>
-            <StyledTableCell>직업</StyledTableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {
-            customersData ? customersData.map(c => {
-              return (
-                <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
-              )
-            }) :
-              <TableRow>
-                <StyledTableCell colSpan="6" align='center'>
-                  <CircularProgressWithLabel value={progress} />
-                </StyledTableCell>
-              </TableRow>
-          }
-        </TableBody>
-      </Table>
-    </TableContainer>
-
+    <div>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 1080 }} aria-label='Customer Table'>
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>번호</StyledTableCell>
+              <StyledTableCell>이미지</StyledTableCell>
+              <StyledTableCell>이름</StyledTableCell>
+              <StyledTableCell>생년월일</StyledTableCell>
+              <StyledTableCell>성별</StyledTableCell>
+              <StyledTableCell>직업</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {
+              customersData ? customersData.map(c => {
+                return (
+                  <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
+                )
+              }) :
+                <TableRow>
+                  <StyledTableCell colSpan="6" align='center'>
+                    <CircularProgressWithLabel value={progress} />
+                  </StyledTableCell>
+                </TableRow>
+            }
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <CustomerAdd stateRefresh={stateRefresh} />
+    </div>
   );
 };
 

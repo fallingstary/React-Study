@@ -27,7 +27,7 @@ function Customer(customer) {
     return (
         <StyledTableRow key={customer.id}>
             <StyledTableCell component="th" scope="row">{customer.id}</StyledTableCell>
-            <StyledTableCell><img src={customer.image} alt="profile"></img></StyledTableCell>
+            <StyledTableCell><img src={customer.image} alt="profile" width='64px' height='64px'></img></StyledTableCell>
             <StyledTableCell>{customer.name}</StyledTableCell>
             <StyledTableCell>{customer.birthday}</StyledTableCell>
             <StyledTableCell>{customer.gender}</StyledTableCell>
