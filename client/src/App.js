@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import './App.css';
 // import { Route, Link, Routes } from 'react-router-dom';
 import Customer from './components/Customer';
@@ -9,8 +10,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import PropTypes from 'prop-types';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
-// table styling
+
+// table css
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
     backgroundColor: theme.palette.common.black,
@@ -20,35 +26,65 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     fontSize: 14,
   },
 }));
-
-const customers = [
-  {
-    'id': 1,
-    'image': 'https://placeimg.com/64/64/any',
-    'name': '정유성',
-    'birthday': '980213',
-    'gender': '남성',
-    'job': '개발자'
-  },
-  {
-    'id': 2,
-    'image': 'https://placeimg.com/64/64/1',
-    'name': '홍길동',
-    'birthday': '920213',
-    'gender': '남성',
-    'job': '의적'
-  },
-  {
-    'id': 3,
-    'image': 'https://placeimg.com/64/64/2',
-    'name': '이순신',
-    'birthday': '870213',
-    'gender': '남성',
-    'job': '장군'
-  },
-]
+// progress(spinner) css
+function CircularProgressWithLabel(props) {
+  return (
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress variant="determinate" {...props} />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <Typography variant="caption" component="div" color="text.secondary">
+          {`${Math.round(props.value)}%`}
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+CircularProgressWithLabel.propTypes = {
+  /**
+   * The value of the progress indicator for the determinate variant.
+   * Value between 0 and 100.
+   * @default 0
+   */
+  value: PropTypes.number.isRequired,
+};
 
 function App() {
+  const [customersData, setData] = useState(null);
+  const [progress, setProgress] = useState(10);
+
+  useEffect(() => {
+    setTimeout(() => {
+      customers();
+    }, 2000);
+    const timer = setInterval(() => {
+      setProgress((prevProgress) => (prevProgress >= 100 ? 0 : prevProgress + 10));
+    }, 800);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  const customers = async () => {
+    try {
+      const response = await fetch('/api/customers');
+      const body = await response.json();
+      setData(body);
+    } catch (error) {
+      console.error('Error fetching data: ', error);
+    }
+  }
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 1080 }} aria-label='Customer Table'>
@@ -64,11 +100,16 @@ function App() {
         </TableHead>
         <TableBody>
           {
-            customers.map(c => {
+            customersData ? customersData.map(c => {
               return (
                 <Customer key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
               )
-            })
+            }) :
+              <TableRow>
+                <StyledTableCell colSpan="6" align='center'>
+                  <CircularProgressWithLabel value={progress} />
+                </StyledTableCell>
+              </TableRow>
           }
         </TableBody>
       </Table>
